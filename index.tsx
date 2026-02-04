@@ -2,11 +2,17 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
-const rootElement = document.getElementById('root');
+/**
+ * Standard React mounting with additional safety checks for the project environment.
+ */
+const mountApp = () => {
+  const rootElement = document.getElementById('root');
 
-if (!rootElement) {
-  console.error("Critical Error: Could not find root element with ID 'root'. Check your index.html.");
-} else {
+  if (!rootElement) {
+    console.error("FreshLabs: Root element #root not found.");
+    return;
+  }
+
   try {
     const root = createRoot(rootElement);
     root.render(
@@ -16,12 +22,19 @@ if (!rootElement) {
     );
     console.log("FreshLabs: Application mounted successfully.");
   } catch (error) {
-    console.error("FreshLabs: Initialization Failed", error);
+    console.error("FreshLabs: React mount error:", error);
     rootElement.innerHTML = `
-      <div style="color: white; padding: 40px; font-family: sans-serif; text-align: center;">
-        <h1 style="color: #ef4444;">Initialization Error</h1>
-        <p>The application failed to load. Please ensure you are running a local development server (like Vite or Live Server with transpilation support) and check the browser console for details.</p>
+      <div style="color: #ef4444; padding: 40px; font-family: sans-serif; text-align: center; background: #020617; height: 100vh;">
+        <h1 style="font-size: 24px;">Initialization Error</h1>
+        <p style="color: #94a3b8;">The React application failed to mount. Check the developer console for details.</p>
       </div>
     `;
   }
+};
+
+// Ensure DOM is ready and any scripts are loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', mountApp);
+} else {
+  mountApp();
 }
