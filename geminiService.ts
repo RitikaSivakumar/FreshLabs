@@ -1,10 +1,15 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { ComplianceRecord, ComplianceStatus } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// Ensure we don't crash if process.env.API_KEY is undefined
+const apiKey = typeof process !== 'undefined' && process.env && process.env.API_KEY ? process.env.API_KEY : '';
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 export const getComplianceInsights = async (compliances: ComplianceRecord[]) => {
+  if (!apiKey) {
+    return ["AI Insights are currently unavailable: API Key not configured."];
+  }
+
   const pending = compliances.filter(c => c.status !== ComplianceStatus.COMPLETED);
   const dataSummary = pending.map(p => ({
     name: p.name,
