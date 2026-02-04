@@ -3,67 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshLabs – Finance Compliance</title>
+    <title>FreshLabs</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; overflow: hidden; background-color: #020617; margin: 0; color: #f8fafc; }
-        #root { height: 100vh; width: 100vw; }
-        #error-overlay { 
-            display: none; position: fixed; inset: 0; background: #020617; 
-            z-index: 9999; color: #ef4444; padding: 40px; text-align: center;
-            font-family: system-ui, -apple-system, sans-serif;
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #1e293b;
+          border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #334155;
         }
     </style>
-    <script>
-        // 1. IMMEDIATE SHIM: Define process before ANY imports happen
-        window.process = { 
-            env: { 
-                NODE_ENV: 'production', 
-                API_KEY: '' 
-            } 
-        };
-
-        // 2. ERROR TRACKING: Catch module errors immediately
-        window.addEventListener('error', function(e) {
-            if (e.message.includes('import') || e.target.tagName === 'SCRIPT') {
-                const overlay = document.getElementById('error-overlay');
-                if (overlay) {
-                    overlay.style.display = 'block';
-                    overlay.innerHTML = `
-                        <h1 style="font-size: 24px; margin-bottom: 16px;">Application Load Failure</h1>
-                        <p style="color: #94a3b8; max-width: 500px; margin: 0 auto;">
-                            The browser failed to load the application modules. This usually happens if you are opening the file directly 
-                            or using a server that doesn't support TypeScript.
-                        </p>
-                        <div style="margin-top: 24px; padding: 16px; background: #0f172a; border-radius: 8px; color: #f1f5f9; font-family: monospace; font-size: 12px; text-align: left; display: inline-block;">
-                            ${e.message || 'Check browser console for Module Resolution errors'}
-                        </div>
-                    `;
-                }
-            }
-        }, true);
-    </script>
-    <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "recharts": "https://esm.sh/recharts@2.15.0",
-    "@google/genai": "https://esm.sh/@google/genai@0.21.0",
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0",
-    "three": "https://esm.sh/three@0.170.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
   }
 }
 </script>
 </head>
-<body>
-    <div id="error-overlay"></div>
+<body class="bg-[#020617] text-slate-100">
     <div id="root"></div>
-    <!-- Note: Vite or a similar tool is required to transpile index.tsx -->
-    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

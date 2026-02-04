@@ -273,7 +273,7 @@ const App: React.FC = () => {
       case 'compliance':
         return <CompliancePage compliances={compliances} userRole={currentUser.role} onUpdate={updateCompliance} />;
       case 'revenue':
-        return <RevenuePage revenues={revenues} userRole={currentUser.role} onAdd={addRevenue} compliances={compliances} />;
+        return <RevenuePage revenues={revenues} userRole={currentUser.role} onAdd={addRevenue} />;
       case 'reports':
         return <ReportsPage compliances={compliances} revenues={revenues} />;
       case 'audit-trail':

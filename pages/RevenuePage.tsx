@@ -1,22 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { RevenueRecord, UserRole, ComplianceRecord } from '../types';
-import { Plus, IndianRupee, Wallet, CreditCard, Building2, Calendar, Download, Filter, Link as LinkIcon } from 'lucide-react';
+import { RevenueRecord, UserRole } from '../types';
+import { Plus, IndianRupee, Wallet, CreditCard, Building2, Calendar, Download, Filter } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface RevenuePageProps {
   revenues: RevenueRecord[];
   userRole: UserRole;
   onAdd: (record: RevenueRecord) => void;
-  compliances: ComplianceRecord[];
 }
 
-const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd, compliances }) => {
+const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [newRevenue, setNewRevenue] = useState<Partial<RevenueRecord>>({
     date: new Date().toISOString().split('T')[0],
-    category: 'Consulting',
-    relatedComplianceId: ''
+    category: 'Consulting'
   });
 
   const categories = useMemo(() => {
@@ -38,26 +36,16 @@ const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd, co
         source: newRevenue.source!,
         mode: newRevenue.mode || 'Wire Transfer',
         amount: Number(newRevenue.amount),
-        category: newRevenue.category!,
-        relatedComplianceId: newRevenue.relatedComplianceId || undefined
+        category: newRevenue.category!
       });
       setShowAddForm(false);
-      setNewRevenue({ 
-        date: new Date().toISOString().split('T')[0], 
-        category: 'Consulting',
-        relatedComplianceId: '' 
-      });
+      setNewRevenue({ date: new Date().toISOString().split('T')[0], category: 'Consulting' });
     }
   };
 
   const chartData = useMemo(() => {
     return [...filteredRevenues].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [filteredRevenues]);
-
-  const getComplianceName = (id?: string) => {
-    if (!id) return null;
-    return compliances.find(c => c.id === id)?.name || 'Unknown Compliance';
-  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -194,34 +182,6 @@ const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd, co
                 <option>UPI</option>
               </select>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase">Related Compliance Item</label>
-              <div className="relative">
-                <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                <select 
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-indigo-600 text-white appearance-none"
-                  value={newRevenue.relatedComplianceId || ''}
-                  onChange={(e) => setNewRevenue({...newRevenue, relatedComplianceId: e.target.value})}
-                >
-                  <option value="">None / General Revenue</option>
-                  {compliances.map(comp => (
-                    <option key={comp.id} value={comp.id}>{comp.name} ({comp.frequency})</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase">Receipt Date</label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                <input 
-                  type="date"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-indigo-600 text-white"
-                  value={newRevenue.date || ''}
-                  onChange={(e) => setNewRevenue({...newRevenue, date: e.target.value})}
-                />
-              </div>
-            </div>
             <div className="md:col-span-3 flex justify-end space-x-4 pt-4">
               <button 
                 type="button"
@@ -252,7 +212,7 @@ const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd, co
               <tr className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Source</th>
-                <th className="px-6 py-4">Category & Link</th>
+                <th className="px-6 py-4">Category</th>
                 <th className="px-6 py-4">Mode</th>
                 <th className="px-6 py-4 text-right">Amount</th>
               </tr>
@@ -266,17 +226,7 @@ const RevenuePage: React.FC<RevenuePageProps> = ({ revenues, userRole, onAdd, co
                       <p className="font-semibold text-slate-100">{rev.source}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-col space-y-1">
-                        <span className="px-2 py-1 bg-slate-900 text-slate-400 rounded-md text-[10px] font-bold border border-slate-800 w-fit">
-                          {rev.category.toUpperCase()}
-                        </span>
-                        {rev.relatedComplianceId && (
-                          <div className="flex items-center text-[10px] text-indigo-400 font-bold">
-                            <LinkIcon size={10} className="mr-1" />
-                            {getComplianceName(rev.relatedComplianceId)}
-                          </div>
-                        )}
-                      </div>
+                      <span className="px-2 py-1 bg-slate-900 text-slate-400 rounded-md text-xs font-medium border border-slate-800">{rev.category}</span>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-400">{rev.mode}</td>
                     <td className="px-6 py-4 text-right">

@@ -69,7 +69,6 @@ export interface RevenueRecord {
   mode: string;
   amount: number;
   category: string;
-  relatedComplianceId?: string;
 }
 
 export interface User {
