@@ -1,10 +1,25 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { ComplianceRecord, ComplianceStatus } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+/**
+ * Initialize the Gemini AI client using the environment variable.
+ * If API_KEY is missing, initialization is deferred to avoid crashes.
+ */
+const getAIClient = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("Gemini API Key is missing. Insights will be disabled.");
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const getComplianceInsights = async (compliances: ComplianceRecord[]) => {
+  const ai = getAIClient();
+  if (!ai) {
+    return ["AI Insights are currently unavailable: API Key not configured."];
+  }
+
   const pending = compliances.filter(c => c.status !== ComplianceStatus.COMPLETED);
   const dataSummary = pending.map(p => ({
     name: p.name,
@@ -17,7 +32,7 @@ export const getComplianceInsights = async (compliances: ComplianceRecord[]) => 
   
   Data: ${JSON.stringify(dataSummary)}
   
-  Format: JSON with a key "summary" as an array of strings.`;
+  Format: Return a JSON object with a key "summary" which is an array of strings.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -28,8 +43,11 @@ export const getComplianceInsights = async (compliances: ComplianceRecord[]) => 
       }
     });
 
-    const result = JSON.parse(response.text || '{"summary": []}');
-    return result.summary;
+    const text = response.text;
+    if (!text) return ["No insights generated."];
+    
+    const result = JSON.parse(text);
+    return result.summary || ["No specific risks identified at this moment."];
   } catch (error) {
     console.error("AI Insight Error:", error);
     return ["Unable to generate AI insights at this time. Please check your connection."];
